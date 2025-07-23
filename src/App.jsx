@@ -92,7 +92,7 @@ function App() {
         </nav>
       </header>
       
-      {/* Deposit Section */}
+     {/* //making a deposit  */}
       <div className="depositbtn" style={{ 
         padding: '20px', 
         margin: '20px 0',
