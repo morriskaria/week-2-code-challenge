@@ -1,14 +1,12 @@
 import { useState } from "react";
 
-function AddGoal() {
+function AddGoal({ onAddGoal }) {
   const [goal, setGoal] = useState({
     name: '',
     targetAmount: '',
     category: 'Other',
     deadline: ''
   });
-  
-  const [goalsList, setGoalsList] = useState([]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -18,69 +16,71 @@ function AddGoal() {
     }));
   };
 
+  
   const handleSubmit = (e) => {
     e.preventDefault();
+    
     const newGoal = {
-      ...goal,
-      id: Date.now(),
+      name: goal.name,
       targetAmount: parseFloat(goal.targetAmount),
       savedAmount: 0,
-      createdAt: new Date().toISOString().split('T')[0]
+      category: goal.category,
+      deadline: goal.deadline,
+      id: Date.now() 
     };
-    
-    setGoalsList(prev => [...prev, newGoal]);
-    setGoal({
-      name: '',
-      targetAmount: '',
-      category: 'Other',
-      deadline: ''
-    });
+
+   
+    fetch("http://localhost:3000/goals", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(newGoal)
+    })
+      .then(response => response.json())
+      .then(savedGoal => { onAddGoal(savedGoal);
+        setGoal({
+          name: '',
+          targetAmount: '',
+          category: 'Other',
+          deadline: ''
+        });
+      })
+      
   };
 
   return (
-    <div className="addbtn" style={{ maxWidth: '500px', margin: '0 auto' }}>
+    <div className="add-goal-form">
       <h2>Add New Goal</h2>
-      <form onSubmit={handleSubmit} style={{ 
-        display: 'flex', 
-        flexDirection: 'column', 
-        gap: '10px',
-        padding: '20px',
-        border: '1px solid #ddd',
-        borderRadius: '8px'
-      }}>
-        <label>
-          Goal Name
+      <form onSubmit={handleSubmit}>
+        <div className="form-group">
+          <label>Goal Name:</label>
           <input
             type="text"
             name="name"
             value={goal.name}
             onChange={handleChange}
-            placeholder="Enter goal name"
-            
+            required
           />
-        </label>
+        </div>
 
-        <label>
-          Target Amount
+        <div className="form-group">
+          <label>Target Amount ($):</label>
           <input
             type="number"
             name="targetAmount"
             value={goal.targetAmount}
             onChange={handleChange}
-            placeholder="Target amount"
-            
             
           />
-        </label>
+        </div>
 
-        <label>
-          Category
+        <div className="form-group">
+          <label>Category:</label>
           <select
             name="category"
             value={goal.category}
-            onChange={handleChange}
-           
-          >
+            onChange={handleChange}>
             <option value="Travel">Travel</option>
             <option value="Emergency">Emergency</option>
             <option value="Electronics">Electronics</option>
@@ -92,10 +92,10 @@ function AddGoal() {
             <option value="Home">Home</option>
             <option value="Other">Other</option>
           </select>
-        </label>
+        </div>
 
-        <label>
-          Deadline
+        <div className="form-group">
+          <label>Deadline:</label>
           <input
             type="date"
             name="deadline"
@@ -103,18 +103,13 @@ function AddGoal() {
             onChange={handleChange}
             min={new Date().toISOString().split('T')[0]}
             required
-            style={{ width: '100%', padding: '8px' }}
           />
-        </label>
+        </div>
 
-        <button 
-          type="submit"
-          
-        >
+        <button type="submit" className="submit-button">
           Add Goal
         </button>
       </form>
-
     </div>
   );
 }

@@ -5,7 +5,7 @@ import GoalDashboard from "./Components/GoalDashboard";
 import GoalsDetails from "./Components/GoalDetails";
 import AddGoal from "./Components/AddGoal";
 import "./App.css"
-import OverviewStats from "./Components/OverviewStats";
+
 
 function App() {
   const [goals, setGoals] = useState([]);
@@ -19,9 +19,7 @@ function App() {
     fetch("http://localhost:3000/goals")
       .then((response) => response.json()) 
       .then((data) => setGoals(data))
-  
   }, []);
-  
 
   function handleAddGoal(newGoal) {
     fetch("http://localhost:3000/goals", {
@@ -32,6 +30,18 @@ function App() {
       .then((response) => response.json())
       .then((data) => setGoals([...goals, data]));
   }
+
+  const handleDeleteGoal = (goalId) => {
+    fetch(`http://localhost:3000/goals/${goalId}`, {
+      method: "DELETE",
+    })
+      .then(response => {
+        if (response.ok) {
+          setGoals(goals.filter(goal => goal.id !== goalId));
+        }
+      })
+      .catch(error => console.error("Error deleting goal:", error));
+  };
 
   const handleDeposit = (e) => {
     e.preventDefault();
@@ -51,15 +61,13 @@ function App() {
       .then((updatedGoal) => {
         setGoals(goals.map(g => g.id === updatedGoal.id ? updatedGoal : g));
         setDepositData({ goalId: '', amount: '' });
-      })
-      .catch(console.error);
+      });
   };
 
   const handleDepositChange = (e) => {
     const { name, value } = e.target;
     setDepositData(prev => ({
-      ...prev,
-      [name]: value
+      ...prev, [name]: value
     }));
   };
 
@@ -68,6 +76,7 @@ function App() {
       <GoalTitle 
         goalsTitle={goal.name} 
         id={goal.id} 
+        onDelete={handleDeleteGoal}
         goalsTarget={goal.targetAmount}
         savedAmount={goal.savedAmount}  
         deadline={goal.deadline}       
@@ -85,14 +94,12 @@ function App() {
     <div className="app-container">
       <header>
         <h1 className="mainheader">Smart Goal Planner</h1>
-      
         <nav>
           <button onClick={() => navigate('/goals')}>View Goals</button>
           <button onClick={() => navigate('/add-goal')}>Add New Goal</button>
         </nav>
       </header>
       
-     {/* //making a deposit  */}
       <div className="depositbtn" style={{ 
         padding: '20px', 
         margin: '20px 0',
