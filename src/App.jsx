@@ -45,11 +45,7 @@ function App() {
 
   const handleDeposit = (e) => {
     e.preventDefault();
-    if (!depositData.goalId || !depositData.amount) return;
-
-    const goal = goals.find(g => g.id === depositData.goalId);
-    if (!goal) return;
-
+    
     const updatedAmount = goal.savedAmount + parseFloat(depositData.amount);
 
     fetch(`http://localhost:3000/goals/${depositData.goalId}`, {

@@ -77,6 +77,22 @@
       "savedAmount": 0,
       "category": "Other",
       "deadline": "51025-02-12"
+    },
+    {
+      "id": 1753520102811,
+      "name": "gym ",
+      "targetAmount": 60000,
+      "savedAmount": 0,
+      "category": "Other",
+      "deadline": "2222-02-01"
+    },
+    {
+      "id": 1753520102811,
+      "name": "gym ",
+      "targetAmount": 60000,
+      "savedAmount": 0,
+      "category": "Other",
+      "deadline": "2222-02-01"
     }
   ]
 }
