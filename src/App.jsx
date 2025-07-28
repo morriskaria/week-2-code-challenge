@@ -6,7 +6,6 @@ import GoalsDetails from "./Components/GoalDetails";
 import AddGoal from "./Components/AddGoal";
 import "./App.css"
 
-
 function App() {
   const [goals, setGoals] = useState([]);
   const navigate = useNavigate();
@@ -28,7 +27,10 @@ function App() {
       body: JSON.stringify(newGoal),
     })
       .then((response) => response.json())
-      .then((data) => setGoals([...goals, data]));
+      .then((data) => {
+        setGoals([...goals, data]);
+        navigate('/goals');
+      });
   }
 
   const handleDeleteGoal = (goalId) => {
@@ -46,7 +48,11 @@ function App() {
   const handleDeposit = (e) => {
     e.preventDefault();
     
-    const updatedAmount = goal.savedAmount + parseFloat(depositData.amount);
+   
+    const goalToUpdate = goals.find(goal => goal.id == depositData.goalId);
+    if (!goalToUpdate) return;
+
+    const updatedAmount = parseFloat(goalToUpdate.savedAmount) + parseFloat(depositData.amount);
 
     fetch(`http://localhost:3000/goals/${depositData.goalId}`, {
       method: "PATCH",
@@ -55,7 +61,7 @@ function App() {
     })
       .then((response) => response.json())
       .then((updatedGoal) => {
-        setGoals(goals.map(g => g.id === updatedGoal.id ? updatedGoal : g));
+        setGoals(goals.map(g => g.id == updatedGoal.id ? updatedGoal : g));
         setDepositData({ goalId: '', amount: '' });
       });
   };
@@ -138,14 +144,7 @@ function App() {
           </div>
           <button 
             type="submit"
-            style={{
-              padding: '10px 15px',
-              backgroundColor: '#4CAF50',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer'
-            }}
+           
           >
             Make Deposit
           </button>
